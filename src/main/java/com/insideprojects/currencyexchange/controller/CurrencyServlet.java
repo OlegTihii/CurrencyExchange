@@ -1,6 +1,5 @@
 package com.insideprojects.currencyexchange.controller;
 
-
 import com.google.gson.Gson;
 import com.insideprojects.currencyexchange.dto.CurrencyDto;
 import com.insideprojects.currencyexchange.service.CurrenciesService;

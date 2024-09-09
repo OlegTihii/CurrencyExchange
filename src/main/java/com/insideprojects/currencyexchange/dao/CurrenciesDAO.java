@@ -1,6 +1,7 @@
 package com.insideprojects.currencyexchange.dao;
 
 import com.insideprojects.currencyexchange.model.Currency;
+import com.insideprojects.currencyexchange.util.ConnectionManager;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,25 +9,19 @@ import java.util.List;
 
 public class CurrenciesDAO {
 
-
     public List<Currency> findAll() {
         List<Currency> currencies = new ArrayList<>();
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:D:/Java Project/CurrencyExchange/src/main/resources/db/sqlite/currency_exchange.db");
-        ) {
-            String query = "SELECT id, Code, CurrencyName, Sign FROM Currencies";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            ResultSet resultSet = preparedStatement.executeQuery();
+        String query = "SELECT id, Code, FullName, Sign FROM Currencies";
+
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
                 Currency currency = new Currency();
                 currency.setId(resultSet.getInt("ID"));
                 currency.setCode(resultSet.getString("Code"));
-                currency.setCurrencyName(resultSet.getString("CurrencyName"));
+                currency.setCurrencyName(resultSet.getString("FullName"));
                 currency.setSign(resultSet.getString("Sign"));
 
                 currencies.add(currency);
@@ -38,16 +33,35 @@ public class CurrenciesDAO {
         }
     }
 
-    public Currency save(Currency currency) {
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
+    public Currency findByCode(String code) {
+        String query = "SELECT id, Code, FullName, Sign FROM Currencies WHERE Code = ?";
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, code);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.getString("Code") == null) {
+                throw new RuntimeException();
+            }
+
+
+            return new Currency(
+                    resultSet.getInt("id"),
+                    resultSet.getString("Code"),
+                    resultSet.getString("FullName"),
+                    resultSet.getString("Sign"));
+
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:D:/Java Project/CurrencyExchange/src/main/resources/db/sqlite/currency_exchange.db");
-        ) {
-            String query = "INSERT INTO Currencies (Code, CurrencyName, Sign) VALUES (?,?,?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+    }
+
+    public Currency save(Currency currency) {
+        String query = "INSERT INTO Currencies (Code, FullName, Sign) VALUES (?,?,?)";
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
             preparedStatement.setString(1, currency.getCode());
             preparedStatement.setString(2, currency.getCurrencyName());
             preparedStatement.setString(3, currency.getSign());
@@ -67,7 +81,7 @@ public class CurrenciesDAO {
     public void update(Currency currency) {
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:D:/Java Project/CurrencyExchange/src/main/resources/db/sqlite/currency_exchange.db");
         ) {
-            String query = "UPDATE Currencies (Code, CurrencyName, Sign) = (?,?,?) WHERE id = ?";
+            String query = "UPDATE Currencies (Code, FullName, Sign) = (?,?,?) WHERE id = ?";
 
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
@@ -93,31 +107,6 @@ public class CurrenciesDAO {
             preparedStatement.setInt(1, id);
 
             preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Currency findByCode(String code) {
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:D:/Java Project/CurrencyExchange/src/main/resources/db/sqlite/currency_exchange.db");
-        ) {
-            String query = "SELECT id, Code, CurrencyName, Sign FROM Currencies WHERE Code = ?";
-
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, code);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            return new Currency(
-                    resultSet.getInt("id"),
-                    resultSet.getString("Code"),
-                    resultSet.getString("CurrencyName"),
-                    resultSet.getString("Sign"));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

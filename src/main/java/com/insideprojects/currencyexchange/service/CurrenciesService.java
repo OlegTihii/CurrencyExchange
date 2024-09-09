@@ -14,8 +14,8 @@ public class CurrenciesService {
     CurrenciesDAO currenciesDAO = new CurrenciesDAO();
 
     public List<CurrencyDto> getAllCurrencies() {
-        List<Currency> findAllCurrency = currenciesDAO.findAll();
-        return findAllCurrency.stream()
+        List<Currency> currencyList = currenciesDAO.findAll();
+        return currencyList.stream()
                 .map(CurrencyMapper.INSTANCE::currencyToCurrencyDto)
                 .collect(Collectors.toList());
     }
