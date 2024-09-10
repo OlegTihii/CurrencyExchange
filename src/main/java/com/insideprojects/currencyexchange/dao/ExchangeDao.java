@@ -79,6 +79,11 @@ public class ExchangeDao {
             preparedStatement.setString(2, targetCurrencyCode);
             ResultSet resultSet = preparedStatement.executeQuery();
 
+            if (resultSet.getString("base_code") == null ||
+                    resultSet.getString("target_code") == null) {
+                return null; //todo нормально ли возвращать null, что бы обработать выше логику?
+            }
+
             return getExchangeRate(resultSet);
 
         } catch (SQLException e) {
@@ -87,7 +92,6 @@ public class ExchangeDao {
 
     }
 
-    //todo Важно протестировать возвращение ID
     public void saveExchangeRate(ExchangeRate exchangeRate) {
         String query = """
                 INSERT INTO ExchangeRates (BaseCurrencyId, TargetCurrencyId, Rate)
@@ -127,7 +131,6 @@ public class ExchangeDao {
             preparedStatement.setInt(4, exchangeRate.getId());
             preparedStatement.executeUpdate();
 
-            //todo Важно протестировать возвращение ID
             return exchangeRate;
 
         } catch (SQLException e) {

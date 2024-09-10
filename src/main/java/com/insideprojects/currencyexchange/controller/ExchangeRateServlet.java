@@ -39,17 +39,14 @@ public class ExchangeRateServlet extends HttpServlet {
 
     protected void doPatch(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String currencyPairCode = request.getPathInfo().substring(1).toUpperCase();
-        String tmp = request.getParameter("rate");
-        System.out.println(tmp);
-        BigDecimal rate = new BigDecimal(request.getParameter("rate"));
+        String tmp = request.getReader().readLine();
+        String rateString = tmp.replace("rate=", "");
+        BigDecimal rate = new BigDecimal(rateString);
 
         ExchangeDto exchangeDto = exchangeService.updateExchangeRate(currencyPairCode, rate);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(new Gson().toJson(exchangeDto));
-
     }
-
-
 }
