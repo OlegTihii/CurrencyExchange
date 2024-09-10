@@ -29,11 +29,7 @@ public class ExchangeRateServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String currencyPairCode = request.getPathInfo().substring(1).toUpperCase();
-
         ExchangeDto exchangeDto = exchangeService.findByCode(currencyPairCode);
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         response.getWriter().write(new Gson().toJson(exchangeDto));
     }
 
@@ -45,8 +41,6 @@ public class ExchangeRateServlet extends HttpServlet {
 
         ExchangeDto exchangeDto = exchangeService.updateExchangeRate(currencyPairCode, rate);
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         response.getWriter().write(new Gson().toJson(exchangeDto));
     }
 }

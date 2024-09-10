@@ -20,9 +20,6 @@ public class ExchangeRatesServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<ExchangeDto> allExchangeRate = exchangeService.getAllExchangeRate();
-
-        response.setContentType("application/x-www-form-urlencoded");
-        response.setCharacterEncoding("UTF-8");
         response.getWriter().write(new Gson().toJson(allExchangeRate));
     }
 
@@ -34,8 +31,6 @@ public class ExchangeRatesServlet extends HttpServlet {
 
         ExchangeDto exchangeDto = exchangeService.saveExchangeRate(baseCurrency, targetCurrency, rate);
 
-        response.setContentType("application/x-www-form-urlencoded");
-        response.setCharacterEncoding("UTF-8");
         response.getWriter().write(new Gson().toJson(exchangeDto));
     }
 

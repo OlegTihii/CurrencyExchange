@@ -19,9 +19,6 @@ public class CurrenciesServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         List<CurrencyDto> currencies = currenciesService.getAllCurrencies();
-
-        response.setContentType("application/x-www-form-urlencoded");
-        response.setCharacterEncoding("UTF-8");
         response.getWriter().write(new Gson().toJson(currencies));
     }
 
@@ -37,9 +34,6 @@ public class CurrenciesServlet extends HttpServlet {
         currency.setSign(sign);
 
         currency = currenciesService.saveCurrency(currency);
-
-        response.setContentType("application/x-www-form-urlencoded");
-        response.setCharacterEncoding("UTF-8");
 
         response.getWriter().write(new Gson().toJson(currency));
     }

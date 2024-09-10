@@ -17,11 +17,7 @@ public class CurrencyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String currencyCode = request.getPathInfo().substring(1).toUpperCase();
-
         CurrencyDto currency = currenciesService.findByCode(currencyCode);
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
         response.getWriter().write(new Gson().toJson(currency));
     }
 }
