@@ -1,20 +1,20 @@
 package com.insideprojects.currencyexchange.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 public class CurrencyDto {
+
+    @SerializedName("id")
     private int id;
-    private String code;
+
+    @SerializedName("name")
     private String currencyName;
+
+    @SerializedName("code")
+    private String code;
+
+    @SerializedName("sign")
     private String sign;
-
-    public CurrencyDto() {
-    }
-
-    public CurrencyDto(int id, String code, String currencyName, String sign) {
-        this.id = id;
-        this.code = code;
-        this.currencyName = currencyName;
-        this.sign = sign;
-    }
 
     public int getId() {
         return id;

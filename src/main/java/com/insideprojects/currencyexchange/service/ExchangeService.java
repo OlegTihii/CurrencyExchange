@@ -31,7 +31,7 @@ public class ExchangeService {
         String targetCode = strings[1];
         ExchangeRate exchangeRate = exchangeDao.findByCodes(baseCode, targetCode);
 
-        if(exchangeRate == null){
+        if (exchangeRate == null) {
             throw new IllegalArgumentException("Currency pair not found");
         }
 
@@ -77,7 +77,7 @@ public class ExchangeService {
             BigDecimal count = exchangeCalculation(exchangeRate.getRate(), amount);
             exchangeRate.setConvertedAmount(count);
 
-            return ExchangeRateMapper.INSTANCE.exchangeToExchangeDto(exchangeRate);
+            return ExchangeRateMapper.INSTANCE.exchangeToExchangeDtoWithoutId(exchangeRate);
 
             //Reverse exchange rate
         } else {
@@ -89,7 +89,7 @@ public class ExchangeService {
                     BigDecimal count = exchangeCalculation(exchangeRate.getRate(), amount);
                     exchangeRate.setConvertedAmount(count);
 
-                    return ExchangeRateMapper.INSTANCE.exchangeToExchangeDto(exchangeRate);
+                    return ExchangeRateMapper.INSTANCE.exchangeToExchangeDtoWithoutId(exchangeRate);
 
                     // Cross exchange rate
                 } else {
@@ -100,7 +100,7 @@ public class ExchangeService {
                     BigDecimal count = exchangeCalculation(exchangeRate.getRate(), amount);
                     exchangeRate.setConvertedAmount(count);
 
-                    return ExchangeRateMapper.INSTANCE.exchangeToExchangeDto(exchangeRate);
+                    return ExchangeRateMapper.INSTANCE.exchangeToExchangeDtoWithoutId(exchangeRate);
                 }
             }
         }

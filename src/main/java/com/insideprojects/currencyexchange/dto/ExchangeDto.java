@@ -1,57 +1,50 @@
 package com.insideprojects.currencyexchange.dto;
 
-import com.insideprojects.currencyexchange.model.Currency;
+import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
 
 public class ExchangeDto {
-    private int id;
-    private Currency baseCurrencyId;
-    private Currency targetCurrencyId;
+
+    @SerializedName("id")
+    private Integer id;
+
+    @SerializedName("baseCurrency")
+    private CurrencyDto baseCurrencyId;
+
+    @SerializedName("targetCurrency")
+    private CurrencyDto targetCurrencyId;
+
+    @SerializedName("rate")
     private BigDecimal rate;
+
+    @SerializedName("amount")
     private BigDecimal amount;
+
+    @SerializedName("convertedAmount")
     private BigDecimal convertedAmount;
 
-    public ExchangeDto() {
-    }
-
-    public ExchangeDto(int id, Currency baseCurrencyId, Currency targetCurrencyId, BigDecimal rate) {
-        this.id = id;
-        this.baseCurrencyId = baseCurrencyId;
-        this.targetCurrencyId = targetCurrencyId;
-        this.rate = rate;
-    }
-
-    public ExchangeDto(int id, Currency baseCurrencyId, Currency targetCurrencyId, BigDecimal rate, BigDecimal amount, BigDecimal convertedAmount) {
-        this.id = id;
-        this.baseCurrencyId = baseCurrencyId;
-        this.targetCurrencyId = targetCurrencyId;
-        this.rate = rate;
-        this.amount = amount;
-        this.convertedAmount = convertedAmount;
-    }
-
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Currency getBaseCurrencyId() {
+    public CurrencyDto getBaseCurrencyId() {
         return baseCurrencyId;
     }
 
-    public void setBaseCurrencyId(Currency baseCurrencyId) {
+    public void setBaseCurrencyId(CurrencyDto baseCurrencyId) {
         this.baseCurrencyId = baseCurrencyId;
     }
 
-    public Currency getTargetCurrencyId() {
+    public CurrencyDto getTargetCurrencyId() {
         return targetCurrencyId;
     }
 
-    public void setTargetCurrencyId(Currency targetCurrencyId) {
+    public void setTargetCurrencyId(CurrencyDto targetCurrencyId) {
         this.targetCurrencyId = targetCurrencyId;
     }
 
