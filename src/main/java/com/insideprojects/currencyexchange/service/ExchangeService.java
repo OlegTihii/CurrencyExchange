@@ -1,6 +1,6 @@
 package com.insideprojects.currencyexchange.service;
 
-import com.insideprojects.currencyexchange.dao.CurrenciesDAO;
+import com.insideprojects.currencyexchange.dao.CurrenciesDao;
 import com.insideprojects.currencyexchange.dao.ExchangeDao;
 import com.insideprojects.currencyexchange.dto.ExchangeDto;
 import com.insideprojects.currencyexchange.mapper.ExchangeRateMapper;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class ExchangeService {
 
     ExchangeDao exchangeDao = new ExchangeDao();
-    CurrenciesDAO currenciesDAO = new CurrenciesDAO();
+    CurrenciesDao currenciesDAO = new CurrenciesDao();
 
     public List<ExchangeDto> getAllExchangeRate() {
         List<ExchangeRate> exchangeRateList = exchangeDao.findAll();
@@ -29,22 +29,18 @@ public class ExchangeService {
         String[] strings = currencyCodeParser(code);
         String baseCode = strings[0];
         String targetCode = strings[1];
-        ExchangeRate exchangeRate = exchangeDao.findByCodes(baseCode, targetCode);
+        ExchangeRate exchangeRate = exchangeDao.findByCodes(baseCode, targetCode)
+                .orElseThrow(() -> new RuntimeException("Currency not found for code: " + code));
 
-        if (exchangeRate == null) {
-            throw new IllegalArgumentException("Currency pair not found");
-        }
 
         return ExchangeRateMapper.INSTANCE.exchangeToExchangeDto(exchangeRate);
     }
 
     public ExchangeDto saveExchangeRate(String baseCode, String targetCode, BigDecimal rate) {
-        Currency baseCurrency = currenciesDAO.findByCode(baseCode);
-        Currency targetCurrency = currenciesDAO.findByCode(targetCode);
-
-        if (baseCurrency == null || targetCurrency == null) {
-            throw new IllegalArgumentException("Currency not found");
-        }
+        Currency baseCurrency = currenciesDAO.findByCode(baseCode)
+                .orElseThrow(() -> new RuntimeException("Currency not found for code: " + baseCode));
+        Currency targetCurrency = currenciesDAO.findByCode(targetCode)
+                .orElseThrow(() -> new RuntimeException("Currency not found for code: " + targetCode));
 
         ExchangeRate exchangeRate = new ExchangeRate(baseCurrency, targetCurrency, rate);
 
@@ -56,11 +52,8 @@ public class ExchangeService {
         String[] currencyCodes = currencyCodeParser(code);
         String baseCode = currencyCodes[0];
         String targetCode = currencyCodes[1];
-        ExchangeRate exchangeRate = exchangeDao.findByCodes(baseCode, targetCode);
-
-        if (exchangeRate == null) {
-            throw new IllegalArgumentException("Currency pair not found");
-        }
+        ExchangeRate exchangeRate = exchangeDao.findByCodes(baseCode, targetCode)
+                .orElseThrow(() -> new RuntimeException("Currency pair not found " + code));
 
         exchangeRate.setRate(rate);
         ExchangeRate updatedExchangeRate = exchangeDao.updateExchangeRate(exchangeRate);
@@ -69,7 +62,12 @@ public class ExchangeService {
     }
 
     public ExchangeDto exchangeRateCalculation(String baseCurrency, String targetCurrency, BigDecimal amount) {
-        ExchangeRate exchangeRate = exchangeDao.findByCodes(baseCurrency, targetCurrency);
+        if (baseCurrency.length() + targetCurrency.length() != 6) {
+            throw new RuntimeException("Incorrect currency pair format");
+        }
+
+        ExchangeRate exchangeRate = exchangeDao.findByCodes(baseCurrency, targetCurrency)
+                .orElse(null);
 
         // Direct exchange rate
         if (exchangeRate != null) {
@@ -81,7 +79,8 @@ public class ExchangeService {
 
             //Reverse exchange rate
         } else {
-            exchangeRate = exchangeDao.findByCodes(targetCurrency, baseCurrency);
+            exchangeRate = exchangeDao.findByCodes(targetCurrency, baseCurrency)
+                    .orElse(null);
             {
                 if (exchangeRate != null) {
                     exchangeRate = reverseExchangeRateToDirectExchangeRate(exchangeRate);
@@ -93,8 +92,11 @@ public class ExchangeService {
 
                     // Cross exchange rate
                 } else {
-                    ExchangeRate usdBaseCurrency = exchangeDao.findByCodes("USD", baseCurrency);
-                    ExchangeRate usdTargetCurrency = exchangeDao.findByCodes("USD", targetCurrency);
+                    ExchangeRate usdBaseCurrency = exchangeDao.findByCodes("USD", baseCurrency)
+                            .orElseThrow(() -> new RuntimeException("Currency pair not found " + "USD" + baseCurrency));
+                    ExchangeRate usdTargetCurrency = exchangeDao.findByCodes("USD", targetCurrency)
+                            .orElseThrow(() -> new RuntimeException("Currency pair not found " + "USD" + targetCurrency));
+
                     exchangeRate = crossExchangeRate(usdBaseCurrency, usdTargetCurrency);
                     exchangeRate.setAmount(amount);
                     BigDecimal count = exchangeCalculation(exchangeRate.getRate(), amount);

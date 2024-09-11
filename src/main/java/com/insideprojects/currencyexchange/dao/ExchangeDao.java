@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ExchangeDao {
 
@@ -46,7 +47,7 @@ public class ExchangeDao {
         }
     }
 
-    public ExchangeRate findByCodes(String baseCurrencyCode, String targetCurrencyCode) {
+    public Optional<ExchangeRate> findByCodes(String baseCurrencyCode, String targetCurrencyCode) {
         String query = """
                 WITH tableBase AS (
                     SELECT ID, Code, FullName, Sign
@@ -79,17 +80,15 @@ public class ExchangeDao {
             preparedStatement.setString(2, targetCurrencyCode);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if (resultSet.getString("base_code") == null ||
-                    resultSet.getString("target_code") == null) {
-                return null; //todo нормально ли возвращать null, что бы обработать выше логику?
+            if (resultSet.next()) {
+                return Optional.of(getExchangeRate(resultSet));
+            } else {
+                return Optional.empty();
             }
-
-            return getExchangeRate(resultSet);
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public void saveExchangeRate(ExchangeRate exchangeRate) {

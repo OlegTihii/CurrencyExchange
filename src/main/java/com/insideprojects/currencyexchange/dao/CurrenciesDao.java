@@ -6,8 +6,9 @@ import com.insideprojects.currencyexchange.util.ConnectionManager;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class CurrenciesDAO {
+public class CurrenciesDao {
 
     public List<Currency> findAll() {
         List<Currency> currencies = new ArrayList<>();
@@ -33,7 +34,7 @@ public class CurrenciesDAO {
         }
     }
 
-    public Currency findByCode(String code) {
+    public Optional<Currency> findByCode(String code) {
         String query = "SELECT id, Code, FullName, Sign FROM Currencies WHERE Code = ?";
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -41,16 +42,15 @@ public class CurrenciesDAO {
             preparedStatement.setString(1, code);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if (resultSet.getString("Code") == null) {
-                throw new RuntimeException();
+            if (resultSet.next()) {
+                return Optional.of(new Currency(
+                        resultSet.getInt("id"),
+                        resultSet.getString("Code"),
+                        resultSet.getString("FullName"),
+                        resultSet.getString("Sign")));
+            } else {
+                return Optional.empty();
             }
-
-
-            return new Currency(
-                    resultSet.getInt("id"),
-                    resultSet.getString("Code"),
-                    resultSet.getString("FullName"),
-                    resultSet.getString("Sign"));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -72,41 +72,6 @@ public class CurrenciesDAO {
                 currency.setId(generatedKeys.getInt(1));
             }
             return currency;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void update(Currency currency) {
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:D:/Java Project/CurrencyExchange/src/main/resources/db/sqlite/currency_exchange.db");
-        ) {
-            String query = "UPDATE Currencies (Code, FullName, Sign) = (?,?,?) WHERE id = ?";
-
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.setString(1, currency.getCode());
-            preparedStatement.setString(2, currency.getCurrencyName());
-            preparedStatement.setString(3, String.valueOf(currency.getSign()));
-            preparedStatement.setInt(4, currency.getId());
-
-            preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void delete(int id) {
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:D:/Java Project/CurrencyExchange/src/main/resources/db/sqlite/currency_exchange.db");
-        ) {
-            String query = "DELETE FROM Currencies WHERE id = ?";
-
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.setInt(1, id);
-
-            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

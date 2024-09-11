@@ -1,17 +1,18 @@
 package com.insideprojects.currencyexchange.service;
 
-import com.insideprojects.currencyexchange.dao.CurrenciesDAO;
+import com.insideprojects.currencyexchange.dao.CurrenciesDao;
 import com.insideprojects.currencyexchange.dto.CurrencyDto;
 import com.insideprojects.currencyexchange.mapper.CurrencyMapper;
 import com.insideprojects.currencyexchange.model.Currency;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
 public class CurrenciesService {
 
-    CurrenciesDAO currenciesDAO = new CurrenciesDAO();
+    CurrenciesDao currenciesDAO = new CurrenciesDao();
 
     public List<CurrencyDto> getAllCurrencies() {
         List<Currency> currencyList = currenciesDAO.findAll();
@@ -21,8 +22,10 @@ public class CurrenciesService {
     }
 
     public CurrencyDto findByCode(String code) {
-        Currency currency = currenciesDAO.findByCode(code);
-        return CurrencyMapper.INSTANCE.currencyToCurrencyDto(currency);
+        Optional<Currency> currency = currenciesDAO.findByCode(code);
+        return currency
+                .map(CurrencyMapper.INSTANCE::currencyToCurrencyDto)
+                .orElseThrow(() -> new RuntimeException("Currency not found for code: " + code));
     }
 
     public CurrencyDto saveCurrency(CurrencyDto currencyDto) {
