@@ -12,7 +12,7 @@ public class ConnectionManager {
     static {
         try {
             SQLiteDataSource sqLiteDataSource = new SQLiteDataSource();
-            sqLiteDataSource.setUrl("jdbc:sqlite:D:\\Java Project\\CurrencyExchange\\src\\main\\resources\\db\\currency_exchange.db");
+            sqLiteDataSource.setUrl("jdbc:sqlite::resource:/db/currency_exchange.db");
             dataSource = sqLiteDataSource;
         } catch (Exception e) {
             throw new RuntimeException("Error: init DataSource", e);
