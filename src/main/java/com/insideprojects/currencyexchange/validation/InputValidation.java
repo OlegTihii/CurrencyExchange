@@ -2,6 +2,8 @@ package com.insideprojects.currencyexchange.validation;
 
 import com.insideprojects.currencyexchange.exception.InvalidInputParametersException;
 
+import java.math.BigDecimal;
+
 public class InputValidation {
     public static void lengthCurrencyCode(String code) throws InvalidInputParametersException {
         if (code.length() != 3 || code.isBlank()) {
@@ -21,4 +23,9 @@ public class InputValidation {
         }
     }
 
+    public static void validationAmount(BigDecimal amount) throws InvalidInputParametersException {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidInputParametersException("Amount must be greater than zero");
+        }
+    }
 }
