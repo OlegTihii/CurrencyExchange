@@ -3,6 +3,7 @@ package com.insideprojects.currencyexchange.controller;
 import com.google.gson.Gson;
 import com.insideprojects.currencyexchange.dto.CurrencyDto;
 import com.insideprojects.currencyexchange.service.CurrenciesService;
+import com.insideprojects.currencyexchange.validation.InputValidation;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +18,9 @@ public class CurrencyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String currencyCode = request.getPathInfo().substring(1).toUpperCase();
+
+        InputValidation.lengthCurrencyCode(currencyCode);
+
         CurrencyDto currency = currenciesService.findByCode(currencyCode);
         response.getWriter().write(new Gson().toJson(currency));
     }

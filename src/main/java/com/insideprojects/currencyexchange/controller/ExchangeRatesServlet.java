@@ -3,6 +3,7 @@ package com.insideprojects.currencyexchange.controller;
 import com.google.gson.Gson;
 import com.insideprojects.currencyexchange.dto.ExchangeDto;
 import com.insideprojects.currencyexchange.service.ExchangeService;
+import com.insideprojects.currencyexchange.validation.InputValidation;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,10 +30,11 @@ public class ExchangeRatesServlet extends HttpServlet {
         String targetCurrency = request.getParameter("targetCurrencyCode");
         BigDecimal rate = new BigDecimal(request.getParameter("rate"));
 
+        InputValidation.lengthCurrencyCode(baseCurrency);
+        InputValidation.lengthCurrencyCode(targetCurrency);
+
         ExchangeDto exchangeDto = exchangeService.saveExchangeRate(baseCurrency, targetCurrency, rate);
 
         response.getWriter().write(new Gson().toJson(exchangeDto));
     }
-
-
 }

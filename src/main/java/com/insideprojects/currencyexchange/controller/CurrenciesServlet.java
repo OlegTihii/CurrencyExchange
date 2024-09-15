@@ -1,9 +1,9 @@
 package com.insideprojects.currencyexchange.controller;
 
-
 import com.google.gson.Gson;
 import com.insideprojects.currencyexchange.dto.CurrencyDto;
 import com.insideprojects.currencyexchange.service.CurrenciesService;
+import com.insideprojects.currencyexchange.validation.InputValidation;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +27,9 @@ public class CurrenciesServlet extends HttpServlet {
         String name = request.getParameter("name");
         String code = request.getParameter("code").toUpperCase();
         String sign = request.getParameter("sign");
+
+        InputValidation.lengthCurrencyCode(code);
+        InputValidation.lengthCurrencySign(sign);
 
         CurrencyDto currency = new CurrencyDto();
         currency.setCode(code);
