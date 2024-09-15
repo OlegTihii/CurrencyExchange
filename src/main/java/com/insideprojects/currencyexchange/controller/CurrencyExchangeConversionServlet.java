@@ -18,8 +18,8 @@ public class CurrencyExchangeConversionServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String baseCurrency = request.getParameter("from");
-        String targetCurrency = request.getParameter("to");
+        String baseCurrency = request.getParameter("from").toUpperCase();
+        String targetCurrency = request.getParameter("to").toUpperCase();
         BigDecimal amountCurrencyConverted = new BigDecimal(request.getParameter("amount"));
 
         InputValidation.lengthCurrencyCode(baseCurrency);
