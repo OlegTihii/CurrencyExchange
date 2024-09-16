@@ -2,6 +2,8 @@ package com.insideprojects.currencyexchange.filters;
 
 import com.google.gson.Gson;
 import com.insideprojects.currencyexchange.dto.ExceptionDto;
+import com.insideprojects.currencyexchange.exception.CurrencyNotFoundException;
+import com.insideprojects.currencyexchange.exception.CurrencyPairNotFoundException;
 import com.insideprojects.currencyexchange.exception.InvalidInputParametersException;
 import com.insideprojects.currencyexchange.mapper.ExceptionMapper;
 import jakarta.servlet.*;
@@ -22,6 +24,12 @@ public class ExceptionHandlingFilter implements Filter {
             ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
             ExceptionDto exceptionDto = ExceptionMapper.INSTANCE.exceptionToExceptionDto(e);
             response.getWriter().write(new Gson().toJson(exceptionDto));
+
+        } catch (CurrencyNotFoundException | CurrencyPairNotFoundException e) {
+            ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_NOT_FOUND);
+            ExceptionDto exceptionDto = ExceptionMapper.INSTANCE.exceptionToExceptionDto(e);
+            response.getWriter().write(new Gson().toJson(exceptionDto));
+
         }
     }
 }
