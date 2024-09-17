@@ -1,5 +1,6 @@
 package com.insideprojects.currencyexchange.dao;
 
+import com.insideprojects.currencyexchange.exception.CurrencyPairAlreadyExistsException;
 import com.insideprojects.currencyexchange.model.Currency;
 import com.insideprojects.currencyexchange.model.ExchangeRate;
 import com.insideprojects.currencyexchange.util.ConnectionManager;
@@ -111,7 +112,7 @@ public class ExchangeDao {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new CurrencyPairAlreadyExistsException("The currency pair already exists");
         }
     }
 

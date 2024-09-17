@@ -3,6 +3,7 @@ package com.insideprojects.currencyexchange.filters;
 import com.google.gson.Gson;
 import com.insideprojects.currencyexchange.dto.ExceptionDto;
 import com.insideprojects.currencyexchange.exception.CurrencyNotFoundException;
+import com.insideprojects.currencyexchange.exception.CurrencyPairAlreadyExistsException;
 import com.insideprojects.currencyexchange.exception.CurrencyPairNotFoundException;
 import com.insideprojects.currencyexchange.exception.InvalidInputParametersException;
 import com.insideprojects.currencyexchange.mapper.ExceptionMapper;
@@ -23,7 +24,7 @@ public class ExceptionHandlingFilter implements Filter {
         try {
             filterChain.doFilter(request, response);
 
-        } catch (InvalidInputParametersException e) {
+        } catch (InvalidInputParametersException | CurrencyPairAlreadyExistsException e) {
             logger.error("", e);
             ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
             ExceptionDto exceptionDto = ExceptionMapper.INSTANCE.exceptionToExceptionDto(e);
